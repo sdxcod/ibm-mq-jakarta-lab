@@ -1,0 +1,19 @@
+# Reuse the native lab's MQ container and network; creates no new broker/volume.
+name: ibm-mq-jakarta-client
+services:
+  agent:
+    image: ibm-mq-jakarta-lab:0.1.0
+    build: .
+    environment:
+      LAB_MQ_HOST: mq
+      LAB_MQ_PASSWORD_FILE: /run/secrets/mqAppPassword
+    secrets: [mqAppPassword]
+    networks: [existing-mq]
+    command: ["--lab.command=demo"]
+networks:
+  existing-mq:
+    external: true
+    name: ${LAB_MQ_DOCKER_NETWORK:-ibm-mq-native-lab_default}
+secrets:
+  mqAppPassword:
+    file: ${LAB_MQ_PASSWORD_FILE:-./.secrets/mqAppPassword}
